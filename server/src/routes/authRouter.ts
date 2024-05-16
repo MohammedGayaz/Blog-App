@@ -2,13 +2,15 @@ import { Hono } from "hono";
 import { register } from "../controller/auth/register";
 import { login } from "../controller/auth/login";
 
-const router = new Hono()
+const router = new Hono();
 
-router.post("/register", register)
-router.post("/login", login)
+router.get("/authTest", (c) => {
+  return c.text("this is a auth");
+});
 
-router.get("/login", (c) => {
-    return c.text("this is a login")
-})
+router.post("/register", register);
+router.post("/login", login);
 
-export default router
+
+
+export default router;

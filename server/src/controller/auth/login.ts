@@ -1,17 +1,16 @@
 // user login controller 
-
-import { getClient } from "../../helper";
 import { sign } from "hono/jwt"
+import { prisma_client } from "../../helper/client";
 
 export const login = async(c: any) => {
-    console.log("this tis login controller")
     //get user data
     const body = await c.req.json();
 
     try{
-        // validate user data
+        // TODO: validate user data with zod
         // check if user exist 
-        const prisma = await getClient(c)
+        const prisma = await prisma_client(c)
+        console.log(prisma)
         const user = await prisma.user.findUnique({
             where:{
                 email: body.email,
@@ -22,7 +21,7 @@ export const login = async(c: any) => {
         // if !user then throw err
         if (!user) {
             c.status(404)
-            return c.json({"error": "user not found"})
+            throw new Error( "User Not Found" )
         }
 
         // else login with hash and generate jwt token        
@@ -33,9 +32,10 @@ export const login = async(c: any) => {
         const token = await sign(payload, c.env.JWT_SECRETE)
         
         c.status(200)
-        return c.json({token, "message" : "User logged in successfully"})
-    } catch(err){
-        c.status(500)
-        return c.json({"error": "Internal Server Problem"})
+        return c.json({"message" : "User logged in successfully", token})
+
+    } catch(err: any){
+        // c.status(500)
+        return c.json({"error": err.message || "Internal Server Problem"})
     }
 } 

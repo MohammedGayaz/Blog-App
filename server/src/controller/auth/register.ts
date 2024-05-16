@@ -1,18 +1,18 @@
-import { getClient } from "../../helper/index";
 import { sign } from 'hono/jwt'
+import { prisma_client } from '../../helper/client';
 
 // user registration controller
 export const register = async (c: any) => {
     // get user data and validate user input
+    // TODO: need to add zod validation
     const body = await c.req.json();
-
     try{
     // check if user exists
-    const prisma = await getClient(c)
+    const prisma = await prisma_client(c) 
     const user = await prisma.user.findUnique({where: {email: body.email}})
     if(user) {
         c.status(409)
-        return c.json({"error" : "user already exist"})
+        throw new Error("User Already Exists")
     }
 
     // if !user then hash password and create user
@@ -33,9 +33,10 @@ export const register = async (c: any) => {
 
     // send token and appropriate message
     c.status(200)
-    return c.json({token, message: "user created"})
-    } catch(err) {
-        c.status(500)
-        return c.json({"error": "Internal server problem"})
+    return c.json({"message": "user created", token})
+
+    } catch(err: any) {
+        // c.status(500)
+        return c.json({"error": err.message || "Internal server problem"})
     }
 }
