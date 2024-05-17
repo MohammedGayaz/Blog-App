@@ -14,8 +14,8 @@ router.get("/blogTest", (c) => {return c.text("blog router")} )
 
 router.post("/create", create)
 router.put("/update", update)
-router.get("/blog/:id", getBlog)
-router.get("/blogs", allBlogs)
+router.get("/get/:id", getBlog)
+router.get("/all", allBlogs)
 
 
 export default router
