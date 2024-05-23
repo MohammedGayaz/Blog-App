@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
+//import { PrismaClient } from "@prisma/client/edge";
+//import { withAccelerate } from "@prisma/extension-accelerate";
 
 import mainRouter from "./routes/index";
 import { logger } from "hono/logger";

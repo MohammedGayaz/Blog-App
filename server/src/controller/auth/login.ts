@@ -1,13 +1,21 @@
 // user login controller 
 import { sign } from "hono/jwt"
 import { prisma_client } from "../../helper/client";
+import { loginInput } from "@green_dev/blog/dist";
 
 export const login = async(c: any) => {
     //get user data
     const body = await c.req.json();
 
+    console.log(body)
     try{
-        // TODO: validate user data with zod
+        // validate user data with zod
+        const {success, error } = loginInput.safeParse(body)
+        console.log(error)
+        if(!success){
+            throw new Error(error.errors[0].message);
+        }
+
         // check if user exist 
         const prisma = await prisma_client(c)
         console.log(prisma)
@@ -30,7 +38,7 @@ export const login = async(c: any) => {
             email: user.email
         }
         const token = await sign(payload, c.env.JWT_SECRETE)
-        
+
         c.status(200)
         return c.json({"message" : "User logged in successfully", token})
 
